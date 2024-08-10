@@ -33,8 +33,8 @@ This is a group activity for at least 3 students:
     
     | Storage Address | 0x0000000000000000000000000000000000000000000000000000000000000000 |
     | --------------- | ------------------------------------------------------------------ |
-    | Before          | TextHello World                                                    |
-    | After           | TextNew test                                                       |
+    | Before          | Hello World                                                    |
+    | After           | New test                                                       |
     
     ---
     
