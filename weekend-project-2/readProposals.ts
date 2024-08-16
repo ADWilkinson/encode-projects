@@ -19,8 +19,6 @@ async function main() {
   console.log(ballotContractAddress);
   if (!ballotContractAddress || ballotContractAddress.length < 1) throw "No contract provided";
 
-  console.log("a", providerApiKey);
-
   const publicClient = createPublicClient({
     chain: sepolia,
     transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
