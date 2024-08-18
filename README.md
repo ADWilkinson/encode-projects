@@ -17,3 +17,9 @@ p8Xm5I - @Hako
 Kk60vy - @phipsae
 
 GTblOQ - @pitycake
+
+Public addresses for testing
+
+1) 0x30B0D5758c79645Eb925825E1Ee8A2c448812F37
+
+2) 0x41693747eA6291D8F521e1cb6D7ea51eaf7C7C9B

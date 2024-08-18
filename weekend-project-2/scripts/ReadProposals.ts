@@ -1,10 +1,9 @@
-
 //@ts-nocheck
-
-/* 
+/** 
+ * @Author Andrew Wilkinson
  1) Copy to hardhatProjectRoot/scripts
  2) Run with:
-    npx ts-node --files ./scripts/readProposals.ts '0x36CE6412d063e157cFb6F95C93d5940eaCAc708E'
+    npx ts-node --files ./scripts/ReadProposals.ts '0x36CE6412d063e157cFb6F95C93d5940eaCAc708E'
 */
 
 import { createPublicClient, http, hexToString } from "viem";
