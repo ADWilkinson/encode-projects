@@ -20,16 +20,28 @@ contract TokenizedBallot {
         address _tokenContract,
         uint256 _targetBlockNumber
     ) {
+        require(
+            _targetBlockNumber > block.number,
+            "Block number must be in the future"
+        );
         tokenContract = IMyToken(_tokenContract);
         targetBlockNumber = _targetBlockNumber;
-        // TODO: Validate if targetBlockNumber is in the past
         for (uint i = 0; i < _proposalNames.length; i++) {
             proposals.push(Proposal({name: _proposalNames[i], voteCount: 0}));
         }
     }
 
+    // TODO: Implement the vote function
     function vote(uint256 proposal, uint256 amount) external {
-        // TODO: Implement vote function
+        uint senderVotingPower = getVotingPower();
+        require(senderVotingPower >= amount, "Not enough voting power");
+    }
+
+    // TODO: Implement the getVotingPower function
+    function getVotingPower(
+        address voter
+    ) public view returns (uint256 _votePower) {
+        return tokenContract.getPastVotes(voter, targetBlockNumber);
     }
 
     function winningProposal() public view returns (uint winningProposal_) {
