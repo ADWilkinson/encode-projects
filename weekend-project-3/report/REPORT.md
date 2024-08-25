@@ -43,19 +43,17 @@ This is a group activity for at least 3 students:
     2. [TxHash (0x467...c4d34)](https://sepolia.etherscan.io/tx/0x467ab65cdbd1f9e991edb46b933bfc5eefc54f8f49458a45ed3b5bba922c4d34)
     3. [Script ↗](./scripts/GiveVotingRight.ts)
     4. [Output ↗](./outputs/GiveVotingRight.md)
-    
-> 💡Trying to call this function and giving as argument an address not part of voters will revert with an unknown reason message.
 
 ---
   
-4. ✅ **[Success]:** Call `mint` function on MyToken contract
+1. ✅ **[Success]:** Call `mint` function on MyToken contract
     1. `npx ts-node --files scripts/MintVoteTokens.ts`
     2. [TxHash (0x0c2...49611)](https://sepolia.etherscan.io/tx/0x0c21144bfa5fef48afe05a917d3cbbeeb8b2d600a701f2b07b1234c8ce649611)
     3. [Script ↗](./scripts/MintVoteTokens.ts)
     
     ---
     
-5. ✅ **[Success]:** Call `delegate` function on MyToken contract
+2. ✅ **[Success]:** Call `delegate` function on MyToken contract
     1. `npx ts-node --files scripts/DelegateVotes.ts`
     2. [TxHash (0xcc5...f2116)](https://sepolia.etherscan.io/tx/0xcc5b3fbff5765a75c75b9a4ff12a72a03b7783992d021e062be398fe3e2f2116)
     3. [Script ↗](./scripts/DelegateVotes.ts)
