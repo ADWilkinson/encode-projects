@@ -3,9 +3,9 @@ import { parseEther, formatEther, toHex } from "viem";
 import { hardhat, sepolia } from "viem/chains";
 import hre from "hardhat";
 
-const MY_TOKEN_CONTRACT_ADDRESS = "0xd7a198685afb81aeac0f8f8edd55856eb13f6597";
-const proposals = ["Proposal 1", "Proposal 2", "Proposal 3"];
-const BLOCKS_TO_INCREASE = 10;
+const MY_TOKEN_CONTRACT_ADDRESS = "0x1c374a02dF04BE89d0a268B58ED9B71D2e8F64ea";
+const proposals = ["Brazil", "Argentina", "Chile"];
+const BLOCKS_TO_INCREASE = 10n;
 
 async function main() {
   console.log("\nDeploying Ballot contract");
@@ -25,7 +25,7 @@ async function main() {
   const ballotContract = await viem.deployContract("TokenizedBallot", [
     proposals.map((prop) => toHex(prop, { size: 32 })),
     MY_TOKEN_CONTRACT_ADDRESS,
-    BigInt(blockNumber),
+    BigInt(blockNumber - 1n),
   ]);
   console.log("Ballot contract deployed to:", ballotContract.address);
   console.log("Voting open for blocknumber:", blockNumber, "and before");

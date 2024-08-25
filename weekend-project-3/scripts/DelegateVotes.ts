@@ -2,7 +2,7 @@ import { viem } from "hardhat";
 import { parseEther } from "viem";
 
 // const NEW_VOTING_TOKEN_ADDRESS = "0xd7a198685afb81aeac0f8f8edd55856eb13f6597";
-const MY_TOKEN_CONTRACT_ADDRESS = "0xd7a198685afb81aeac0f8f8edd55856eb13f6597";
+const MY_TOKEN_CONTRACT_ADDRESS = "0x1c374a02dF04BE89d0a268B58ED9B71D2e8F64ea";
 
 async function main() {
   const publicClient = await viem.getPublicClient();
@@ -31,7 +31,8 @@ async function main() {
     account.account.address,
     blockNumber,
   ]);
-  console.log("getPastVotes", getPastVotes.toString());
+
+  console.log("getPastVotes", getPastVotes);
 }
 
 main().catch((err) => {

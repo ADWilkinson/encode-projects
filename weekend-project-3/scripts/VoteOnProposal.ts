@@ -1,9 +1,9 @@
 import { viem } from "hardhat";
 import { parseEther, formatEther } from "viem";
 
-const BALLOT_CONTRACT = "0x9177dca2e3cbffbd545d9555d7faf7b490293a79";
-const FAVORITE_PROPOSAL = 0n;
-const VOTES = parseEther("100");
+const BALLOT_CONTRACT = "0xf359BDdfb633EFD1c8247107224d5B6a2A0D5f05";
+const FAVORITE_PROPOSAL = 1n;
+const VOTES = parseEther("5");
 
 async function main() {
   const publicClient = await viem.getPublicClient();
