@@ -18,3 +18,5 @@ ignition/deployments/chain-31337
 
 .yarn/
 .yarnrc.yml
+
+hardhat.config.ts
