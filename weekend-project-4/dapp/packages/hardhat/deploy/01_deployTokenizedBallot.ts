@@ -47,6 +47,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract to interact with it after deploying.
   const ballotContract = await hre.ethers.getContract<TokenizedBallot>("TokenizedBallot", deployer);
+
+  await hre.run("verify:verify", {
+    address: await ballotContract.getAddress(),
+    constructorArguments: [BALLOT_PROPOSALS, TOKEN_ADDRESS, BigInt(blockNumber - 1)],
+  });
+
   console.log("👋 Ballot Proposal:", await ballotContract.proposals(0n));
 };
 

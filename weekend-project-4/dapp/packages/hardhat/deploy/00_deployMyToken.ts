@@ -35,6 +35,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract to interact with it after deploying.
   const myTokenContract = await hre.ethers.getContract<MyToken>("MyToken", deployer);
+
+  await hre.run("verify:verify", {
+    address: await myTokenContract.getAddress(),
+    constructorArguments: [],
+  });
+
   console.log("👋 Token:", await myTokenContract.symbol());
 };
 
