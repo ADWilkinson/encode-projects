@@ -28,8 +28,8 @@ export class AppService {
     return await this.walletClient.account.address;
   }
 
-  async getContractAddress(): Promise<string> {
-    return getAddress(await this.configService.get<string>('TOKEN_ADDRESS'));
+  getContractAddress(): string {
+    return this.configService.get<string>('TOKEN_ADDRESS');
   }
 
   async checkMinterRole(address: string): Promise<boolean> {
