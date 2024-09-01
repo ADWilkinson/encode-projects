@@ -4,7 +4,7 @@ export const RequestTokens = (params: { address: string }) => {
   const [data, setData] = useState<{ result: boolean }>();
   const [isLoading, setLoading] = useState(false);
 
-  const body = { address: params.address, amount: 2 };
+  const body = { address: params.address, amount: 100 * 10 ** 18 };
 
   if (isLoading) return <p>Requesting tokens from API...</p>;
   if (!data)
