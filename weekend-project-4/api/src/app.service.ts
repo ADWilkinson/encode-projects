@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { sepolia } from 'viem/chains';
+import { hardhat } from 'viem/chains';
 import * as tokenJson from './assets/MyToken.json';
 import { getAddress } from 'viem';
 
@@ -14,12 +14,12 @@ export class AppService {
   constructor(private configService: ConfigService) {
     const account = privateKeyToAccount(`0x${process.env.PRIVATE_KEY}`);
     this.publicClient = createPublicClient({
-      chain: sepolia,
+      chain: hardhat,
       transport: http(process.env.RPC_ENDPOINT_URL),
     });
     this.walletClient = createWalletClient({
       transport: http(process.env.RPC_ENDPOINT_URL),
-      chain: sepolia,
+      chain: hardhat,
       account: account,
     });
   }
