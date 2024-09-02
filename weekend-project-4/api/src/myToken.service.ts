@@ -7,18 +7,20 @@ import * as tokenJson from './assets/MyToken.json';
 import { getAddress } from 'viem';
 
 @Injectable()
-export class AppService {
+export class MyTokenService {
   publicClient;
   walletClient;
 
   constructor(private configService: ConfigService) {
-    const account = privateKeyToAccount(`0x${process.env.PRIVATE_KEY}`);
+    const account = privateKeyToAccount(
+      `0x${this.configService.get<string>('PRIVATE_KEY')}`,
+    );
     this.publicClient = createPublicClient({
       chain: sepolia,
-      transport: http(process.env.RPC_ENDPOINT_URL),
+      transport: http(this.configService.get<string>('RPC_ENDPOINT_URL')),
     });
     this.walletClient = createWalletClient({
-      transport: http(process.env.RPC_ENDPOINT_URL),
+      transport: http(this.configService.get<string>('RPC_ENDPOINT_URL')),
       chain: sepolia,
       account: account,
     });
