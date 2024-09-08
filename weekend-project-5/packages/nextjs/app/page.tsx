@@ -1,99 +1,101 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ethers } from 'ethers'
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 
-// ABI and contract address
-const LOTTERY_ADDRESS = '0x75FE17F10400016478EE6818BcDe173f7A2E2430' 
-const LOTTERY_ABI = '/home/pitycake/web3pitycake/finallottery/encode-projects-group-3/weekend-project-5/packages/hardhat/deployments/sepolia/Lottery.json' 
+const LOTTERY_ADDRESS = '0x75FE17F10400016478EE6818BcDe173f7A2E2430'; 
 const LOTTERY_TOKEN_ADDRESS = '0x1c00F02994eD69C4845FDaF182215eA1a819Fd2C'; 
-const LOTTERY_TOKEN_ABI = '/home/pitycake/web3pitycake/finallottery/encode-projects-group-3/weekend-project-5/packages/hardhat/deployments/sepolia/LotteryToken.json'; 
 
 export default function LotteryPage() {
-  const [lotteryContract, setLotteryContract] = useState<ethers.Contract | null>(null)
-  const [lotteryTokenContract, setLotteryTokenContract] = useState<ethers.Contract | null>(null)
-  const [account, setAccount] = useState<string>('')
-  const [error, setError] = useState<string>('')
-  const [amount, setAmount] = useState<string>('')
+  const [lotteryContract, setLotteryContract] = useState<ethers.Contract | null>(null);
+  const [lotteryTokenContract, setLotteryTokenContract] = useState<ethers.Contract | null>(null);
+  const [account, setAccount] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [amount, setAmount] = useState<string>('');
 
   useEffect(() => {
     const init = async () => {
       if (typeof window.ethereum !== 'undefined') {
         try {
-          await window.ethereum.request({ method: 'eth_requestAccounts' })
-          const provider = new ethers.BrowserProvider(window.ethereum)
-          const signer = provider.getSigner()
-          const address = await (await signer).getAddress()
-          setAccount(address)
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const provider = new ethers.BrowserProvider(window.ethereum); 
+          const signer = provider.getSigner();
+          const address = await (await signer).getAddress();
+          setAccount(address);
 
-          const lottery = new ethers.Contract(LOTTERY_ADDRESS, LOTTERY_ABI, await signer)
-          setLotteryContract(lottery)
+          // Dynamically import ABI files
+          const { abi: LOTTERY_ABI } = await import('./Lottery.json') as unknown as { abi: string };
+          const LOTTERY_TOKEN_ABI = (await import('./LotteryToken.json')).default;
 
-          const lotteryToken = new ethers.Contract(LOTTERY_TOKEN_ADDRESS, LOTTERY_TOKEN_ABI, await signer)
-          setLotteryTokenContract(lotteryToken)
+          const lottery = new ethers.Contract(LOTTERY_ADDRESS, LOTTERY_ABI, await signer);
+          setLotteryContract(lottery);
+
+          const lotteryToken = new ethers.Contract(LOTTERY_TOKEN_ADDRESS, LOTTERY_TOKEN_ABI, await signer);
+          setLotteryTokenContract(lotteryToken);
+
         } catch (error) {
-          setError(`Initialization Error: ${(error as Error).message}`)
-          console.error("An error occurred:", error)
+          setError(`Initialization Error: ${(error as Error).message}`);
+          console.error("An error occurred:", error);
         }
       } else {
-        setError('Please install MetaMask!')
+        setError('Please install MetaMask!');
       }
     }
 
-    init()
-  }, [])
+    init();
+  }, []);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(event.target.value)
+    setAmount(event.target.value);
   }
 
   const purchaseTokens = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault()
-  
+    event.preventDefault();
+
     if (!lotteryContract) {
-      setError("Contract is not initialized.")
-      return
+      setError("Contract is not initialized.");
+      return;
     }
-  
+
     try {
-      const value = ethers.parseEther(amount)
-      const tx = await lotteryContract.purchaseTokens({ value })
-      await tx.wait()
-  
-      console.log('Tokens purchased successfully')
+      const value = ethers.parseEther(amount);
+      const tx = await lotteryContract.purchaseTokens({ value });
+      await tx.wait();
+
+      console.log('Tokens purchased successfully');
     } catch (error) {
-      setError(`Error purchasing tokens: ${(error as Error).message}`)
-      console.error("Error purchasing tokens:", error)
+      setError(`Error purchasing tokens: ${(error as Error).message}`);
+      console.error("Error purchasing tokens:", error);
     }
   }
 
   const placeBet = async (option: string) => {
     if (!lotteryContract) {
-      setError("Contract is not initialized.")
-      return
+      setError("Contract is not initialized.");
+      return;
     }
     try {
-      const tx = await lotteryContract.placeBet(option === 'Argentina' ? 0 : 1)
-      await tx.wait()
-      console.log('Bet placed successfully')
+      const tx = await lotteryContract.placeBet(option === 'Argentina' ? 0 : 1);
+      await tx.wait();
+      console.log('Bet placed successfully');
     } catch (error) {
-      setError(`Error placing bet: ${(error as Error).message}`)
-      console.error("Error placing bet:", error)
+      setError(`Error placing bet: ${(error as Error).message}`);
+      console.error("Error placing bet:", error);
     }
   }
 
   const withdrawPrize = async () => {
     if (!lotteryContract) {
-      setError("Contract is not initialized.")
-      return
+      setError("Contract is not initialized.");
+      return;
     }
     try {
-      const tx = await lotteryContract.withdrawPrize(ethers.parseEther("1")) // Adjust prize amount if needed
-      await tx.wait()
-      console.log('Prize withdrawn successfully')
+      const tx = await lotteryContract.withdrawPrize(ethers.parseEther("1")); // Adjust prize amount if needed
+      await tx.wait();
+      console.log('Prize withdrawn successfully');
     } catch (error) {
-      setError(`Error withdrawing prize: ${(error as Error).message}`)
-      console.error("Error withdrawing prize:", error)
+      setError(`Error withdrawing prize: ${(error as Error).message}`);
+      console.error("Error withdrawing prize:", error);
     }
   }
 
