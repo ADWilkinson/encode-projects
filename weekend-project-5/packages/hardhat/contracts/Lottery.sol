@@ -17,7 +17,7 @@ contract Lottery is Ownable {
 	enum BetOption {
 		Argentina,
 		Brazil
-	} // Heads = Argentina, Tails = Brazil
+	} // Heads = Argentina, Tails = Brazil //This is a function to replace heads and tails by Argentina and Brazil
 
 	struct Bet {
 		address player;
