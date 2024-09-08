@@ -1,71 +1,221 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import type { NextPage } from "next";
-import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import { useState, useEffect } from 'react'
+import { ethers } from 'ethers'
 
-const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+
+// ABI and contract address
+const CONTRACT_ADDRESS = '0x75FE17F10400016478EE6818BcDe173f7A2E2430'
+const CONTRACT_ABI = '/home/pitycake/web3pitycake/finallottery/encode-projects-group-3/weekend-project-5/packages/hardhat/deployments/sepolia/Lottery.json' // Replace with your contract ABI'
+
+export default function LotteryPage() {
+  const [contract, setContract] = useState(null)
+  const [account, setAccount] = useState('')
+  const [tokenBalance, setTokenBalance] = useState('0')
+  const [ethAmount, setEthAmount] = useState('')
+  const [betOption, setBetOption] = useState('Argentina')
+  const [prizeAmount, setPrizeAmount] = useState('')
+  const [burnAmount, setBurnAmount] = useState('')
+  const [ownerWithdrawAmount, setOwnerWithdrawAmount] = useState('')
+  const [closingTime, setClosingTime] = useState('')
+
+  useEffect(() => {
+    const init = async () => {
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' })
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+          const signer = provider.getSigner()
+          const address = await signer.getAddress()
+          setAccount(address)
+
+          const lotteryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
+          setContract(lotteryContract)
+
+          // Get token balance
+          const balance = await lotteryContract.paymentToken().balanceOf(address)
+          setTokenBalance(ethers.utils.formatEther(balance))
+        } catch (error) {
+          console.error("An error occurred:", error)
+        }
+      } else {
+        console.log('Please install MetaMask!')
+      }
+    }
+
+    init()
+  }, [])
+
+  const purchaseTokens = async () => {
+    if (!contract) {
+      console.error("Contract is not initialized.");
+      return;
+    }
+    try {
+      console.log("Attempting to purchase tokens with contract:", contract);
+      const tx = await contract.purchaseTokens({ value: ethers.utils.parseEther(ethAmount) });
+      await tx.wait();
+      console.log('Tokens purchased successfully');
+      // Update token balance
+      const balance = await contract.paymentToken().balanceOf(account);
+      setTokenBalance(ethers.utils.formatEther(balance));
+    } catch (error) {
+      console.error("Error purchasing tokens:", error);
+    }
+  };
+
+  const placeBet = async () => {
+    try {
+      const tx = await contract.placeBet(betOption === 'Argentina' ? 0 : 1)
+      await tx.wait()
+      console.log('Bet placed successfully')
+    } catch (error) {
+      console.error("Error placing bet:", error)
+    }
+  }
+
+  const withdrawPrize = async () => {
+    try {
+      const tx = await contract.withdrawPrize(ethers.utils.parseEther(prizeAmount))
+      await tx.wait()
+      console.log('Prize withdrawn successfully')
+    } catch (error) {
+      console.error("Error withdrawing prize:", error)
+    }
+  }
+
+  const burnTokens = async () => {
+    try {
+      const tx = await contract.returnTokens(ethers.utils.parseEther(burnAmount))
+      await tx.wait()
+      console.log('Tokens burned successfully')
+      // Update token balance
+      const balance = await contract.paymentToken().balanceOf(account)
+      setTokenBalance(ethers.utils.formatEther(balance))
+    } catch (error) {
+      console.error("Error burning tokens:", error)
+    }
+  }
+
+  const ownerWithdraw = async () => {
+    try {
+      const tx = await contract.ownerWithdraw(ethers.utils.parseEther(ownerWithdrawAmount))
+      await tx.wait()
+      console.log('Owner withdrawal successful')
+    } catch (error) {
+      console.error("Error in owner withdrawal:", error)
+    }
+  }
+
+  const openBets = async () => {
+    try {
+      const tx = await contract.openBets(Math.floor(Date.now() / 1000) + parseInt(closingTime))
+      await tx.wait()
+      console.log('Bets opened successfully')
+    } catch (error) {
+      console.error("Error opening bets:", error)
+    }
+  }
+
+  const closeBets = async () => {
+    try {
+      const tx = await contract.closeBetsAndDetermineOutcome()
+      await tx.wait()
+      console.log('Bets closed and outcome determined')
+    } catch (error) {
+      console.error("Error closing bets:", error)
+    }
+  }
 
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
+    <div style={{ padding: '20px' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>Lottery dApp</h1>
+      <p style={{ fontSize: '1.2rem', marginBottom: '10px' }}>Connected Account: {account}</p>
+      <p style={{ fontSize: '1.2rem', marginBottom: '20px' }}>Token Balance: {tokenBalance}</p>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Purchase Tokens</h2>
+        <input
+          type="text"
+          value={ethAmount}
+          onChange={(e) => setEthAmount(e.target.value)}
+          placeholder="Enter ETH amount"
+          style={{ fontSize: '1rem', marginRight: '10px' }}
+        />
+        <button onClick={purchaseTokens} style={{ fontSize: '1rem' }}>Purchase Tokens</button>
       </div>
-    </>
-  );
-};
 
-export default Home;
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Place Bet</h2>
+        <label style={{ display: 'block', fontSize: '1.2rem', marginBottom: '10px' }}>
+          <input
+            type="radio"
+            value="Argentina"
+            checked={betOption === 'Argentina'}
+            onChange={() => setBetOption('Argentina')}
+          />
+          Argentina
+        </label>
+        <label style={{ display: 'block', fontSize: '1.2rem', marginBottom: '10px' }}>
+          <input
+            type="radio"
+            value="Brazil"
+            checked={betOption === 'Brazil'}
+            onChange={() => setBetOption('Brazil')}
+          />
+          Brazil
+        </label>
+        <button onClick={placeBet} style={{ fontSize: '1rem' }}>Place Bet</button>
+      </div>
+
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Withdraw Prize</h2>
+        <input
+          type="text"
+          value={prizeAmount}
+          onChange={(e) => setPrizeAmount(e.target.value)}
+          placeholder="Enter prize amount"
+          style={{ fontSize: '1rem', marginRight: '10px' }}
+        />
+        <button onClick={withdrawPrize} style={{ fontSize: '1rem' }}>Withdraw Prize</button>
+      </div>
+
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Burn Tokens</h2>
+        <input
+          type="text"
+          value={burnAmount}
+          onChange={(e) => setBurnAmount(e.target.value)}
+          placeholder="Enter amount to burn"
+          style={{ fontSize: '1rem', marginRight: '10px' }}
+        />
+        <button onClick={burnTokens} style={{ fontSize: '1rem' }}>Burn Tokens</button>
+      </div>
+
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Owner Withdraw</h2>
+        <input
+          type="text"
+          value={ownerWithdrawAmount}
+          onChange={(e) => setOwnerWithdrawAmount(e.target.value)}
+          placeholder="Enter amount to withdraw"
+          style={{ fontSize: '1rem', marginRight: '10px' }}
+        />
+        <button onClick={ownerWithdraw} style={{ fontSize: '1rem' }}>Owner Withdraw</button>
+      </div>
+
+      <div>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Open/Close Bets</h2>
+        <input
+          type="text"
+          value={closingTime}
+          onChange={(e) => setClosingTime(e.target.value)}
+          placeholder="Enter closing time in seconds"
+          style={{ fontSize: '1rem', marginRight: '10px' }}
+        />
+        <button onClick={openBets} style={{ fontSize: '1rem', marginRight: '10px' }}>Open Bets</button>
+        <button onClick={closeBets} style={{ fontSize: '1rem' }}>Close Bets</button>
+      </div>
+    </div>
+  )
+}
